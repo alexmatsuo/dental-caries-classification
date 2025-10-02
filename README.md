@@ -139,34 +139,6 @@ result = ensemble.ensemble_predict(
 
 print(f"Predicted class: {result['predicted_label']}")
 print(f"Confidence: {result['confidence']:.2%}")
-```
-
-## 📁 Project Structure
-
-```
-dental-caries-classification/
-├── README.md
-├── LICENSE
-├── requirements.txt
-├── .gitignore
-├── docs/
-│   ├── TCC_Alex_Matsuo.pdf
-│   └── images/
-├── src/
-│   ├── convnext.py
-│   ├── yolo.py
-│   ├── convnexteval.py
-│   ├── eval.py
-│   └── en3.py
-├── models/
-│   └── README.md
-├── dataset/
-│   └── README.md
-└── results/
-    ├── confusion_matrices/
-    ├── performance_graphs/
-    └── sample_predictions/
-```
 
 ## 📁 Dataset Structure
 
@@ -233,7 +205,7 @@ HarmonicMean = 2 × (p_convnext × p_yolo) / (p_convnext + p_yolo + ε)
 
 ## 📈 Visualizations
 
-All generated visualizations are available in the `results/` directory:
+All generated visualizations are available in the `images/` directory:
 
 - Confusion matrices (validation and test sets)
 - Per-class accuracy comparisons
