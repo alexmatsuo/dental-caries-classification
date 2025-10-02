@@ -1,3 +1,5 @@
+# Dental Caries Classification Using Deep Learning Ensemble
+
 🦷 **Automated classification system for dental caries using ConvNeXt and YOLO11 ensemble**
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
@@ -68,17 +70,234 @@ This project implements an automated dental caries classification system using a
 | c6 | 0.88 | 1.00 | 0.93 |
 | hg | 0.92 | 0.83 | 0.87 |
 
- License
-This project is licensed under the MIT License - see the LICENSE file for details.
-🙏 Acknowledgments
+## 🚀 Quick Start
 
-Advisor: Prof. Lucas Ferrari de Oliveira for guidance and support
-UFPR: Universidade Federal do Paraná for providing resources
-Community: PyTorch and Ultralytics teams for excellent frameworks
+### Prerequisites
 
-📧 Contact
-Alex Matsuo
+- Python 3.8+
+- CUDA-capable GPU (recommended)
+- 8GB+ RAM
 
-GitHub: @alexmatsuo
-LinkedIn: https://www.linkedin.com/in/alex-matsuo/
-Email: gmalexmatsuo@gmail.com
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/alexmatsuo/dental-caries-classification.git
+cd dental-caries-classification
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Usage
+
+#### 1. Train ConvNeXt Model
+
+```bash
+python src/convnext.py
+```
+
+#### 2. Train YOLO11 Model
+
+```bash
+python src/yolo.py
+```
+
+#### 3. Evaluate Individual Models
+
+```bash
+# Evaluate ConvNeXt
+python src/convnexteval.py
+```
+
+#### 4. Run Ensemble Evaluation
+
+```bash
+python src/eval.py
+```
+
+#### 5. Predict Single Image
+
+```python
+from src.eval import DentalCariesEnsemble
+
+# Initialize ensemble
+ensemble = DentalCariesEnsemble(
+    convnext_path='best_convnext.pth',
+    yolo_path='best.pt'
+)
+
+# Make prediction
+result = ensemble.ensemble_predict(
+    'path/to/image.jpg',
+    method='harmonic_mean'
+)
+
+print(f"Predicted class: {result['predicted_label']}")
+print(f"Confidence: {result['confidence']:.2%}")
+```
+
+## 📁 Project Structure
+
+```
+dental-caries-classification/
+├── README.md
+├── LICENSE
+├── requirements.txt
+├── .gitignore
+├── docs/
+│   ├── TCC_Alex_Matsuo.pdf
+│   └── images/
+├── src/
+│   ├── convnext.py
+│   ├── yolo.py
+│   ├── convnexteval.py
+│   ├── eval.py
+│   └── en3.py
+├── models/
+│   └── README.md
+├── dataset/
+│   └── README.md
+└── results/
+    ├── confusion_matrices/
+    ├── performance_graphs/
+    └── sample_predictions/
+```
+
+## 📁 Dataset Structure
+
+```
+dataset/
+├── train/
+│   ├── bc/
+│   ├── c4/
+│   ├── c5/
+│   ├── c6/
+│   └── hg/
+├── val/
+│   └── (same structure)
+└── test/
+    └── (same structure)
+```
+
+**Dataset Statistics:**
+- Total images: 600
+- Training: 75% (450 images)
+- Validation: 13% (78 images)
+- Test: 12% (72 images)
+- Image size: 224×224 pixels
+
+## 🔬 Methodology
+
+### Data Preprocessing
+
+- **Resize**: 256×256 → Center crop 224×224
+- **Normalization**: ImageNet mean/std
+- **Augmentation** (training only):
+  - Random rotation (±15°)
+  - Random horizontal flip
+  - Random resized crop
+  - HSV jittering
+
+### Training Configuration
+
+#### ConvNeXt
+- **Optimizer**: AdamW (lr=1e-4)
+- **Scheduler**: CosineAnnealingLR
+- **Epochs**: 20
+- **Batch size**: 16
+- **Loss**: CrossEntropyLoss
+
+#### YOLO11
+- **Optimizer**: AdamW (lr=1e-3)
+- **Scheduler**: Cosine with warmup
+- **Epochs**: 50
+- **Batch size**: 32
+- **Augmentation**: Extensive (mosaic, mixup, HSV)
+
+### Ensemble Strategy
+
+The Harmonic Mean method achieved the best results by:
+1. Requiring strong consensus between models
+2. Penalizing large disagreements
+3. Maintaining high confidence only when both models agree
+
+**Formula:**
+```
+HarmonicMean = 2 × (p_convnext × p_yolo) / (p_convnext + p_yolo + ε)
+```
+
+## 📈 Visualizations
+
+All generated visualizations are available in the `results/` directory:
+
+- Confusion matrices (validation and test sets)
+- Per-class accuracy comparisons
+- Precision-Recall-F1 radar charts
+- Sample predictions with confidence scores
+- Model performance summary
+
+## 🎓 Academic Context
+
+This project was developed as a Bachelor's thesis (TCC) in Computer Science at:
+
+**Universidade Federal do Paraná (UFPR)**
+- **Student**: Alex Matsuo
+- **Advisor**: Prof. Lucas Ferrari de Oliveira
+- **Year**: 2025
+- **Department**: Departamento de Informática (DInf)
+
+### Abstract
+
+This work presents an automated system for dental caries classification using deep learning ensemble techniques. By combining ConvNeXt and YOLO11 architectures, the system achieves 90.3% accuracy across five caries categories, demonstrating the potential of hybrid AI systems in dental diagnosis assistance.
+
+**Full thesis**: [docs/TCC_Alex_Matsuo.pdf](docs/TCC_Alex_Matsuo.pdf)
+
+## 📚 References
+
+### Key Papers
+
+1. **ConvNeXt**: Liu et al. (2022). "A ConvNet for the 2020s"
+2. **YOLO11**: Khanam & Hussain (2024). "YOLOv11: An Overview"
+3. **Ensemble Learning**: Dietterich (2000). "Ensemble Methods in Machine Learning"
+4. **Dental AI**: Schwendicke et al. (2019). "CNNs for Dental Image Diagnostics"
+
+### Citation
+
+If you use this work, please cite:
+
+```bibtex
+@thesis{matsuo2025dental,
+  title={Classificação de Cáries Dentárias Utilizando Ensemble de Redes Neurais Convolucionais},
+  author={Matsuo, Alex},
+  year={2025},
+  school={Universidade Federal do Paraná},
+  type={Bachelor's Thesis}
+}
+```
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Advisor**: Prof. Lucas Ferrari de Oliveira for guidance and support
+- **UFPR**: Universidade Federal do Paraná for providing resources
+- **Community**: PyTorch and Ultralytics teams for excellent frameworks
+
+## 📧 Contact
+
+**Alex Matsuo**
+- GitHub: [@alexmatsuo](https://github.com/alexmatsuo)
+- LinkedIn: [linkedin.com/in/alex-matsuo](https://www.linkedin.com/in/alex-matsuo/)
+- Email: gmalexmatsuo@gmail.com
+
+---
+
+⭐ If you find this project useful, please consider giving it a star!
+
